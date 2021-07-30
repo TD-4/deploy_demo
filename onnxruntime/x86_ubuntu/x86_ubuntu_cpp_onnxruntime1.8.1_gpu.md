@@ -406,23 +406,24 @@ Number of outputs = 1
 Output 0 : name=output
 Output 0 : type=1
 Output 0 : num_dims=0
-running time ：1.10224sec
+running time ：0.626488sec
 
 Score for class  =  0.392816
-running time one：0.00722699sec
+running time one：0.00550859sec
 
-running time one：0.0138947sec
+running time one：0.00549474sec
 
-running time one：0.0141799sec
+running time one：0.0054654sec
 
-running time one：0.0142911sec
+running time one：0.00545396sec
 
-running time one：0.0142693sec
+running time one：0.00545044sec
 
 Score for class  =  0.998471
 Done!
+
 root@6c14f6aeab13:~/onnxruntime_cpp/demo_gpu/build#
 
 ```
 
-**Time:0.0142693sec**
+**Time:0.00545044sec**

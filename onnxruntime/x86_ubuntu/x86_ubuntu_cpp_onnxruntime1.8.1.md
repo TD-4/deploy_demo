@@ -373,7 +373,7 @@ Output 0 : type=1
 Output 0 : num_dims=0
 running time ：1.07404sec
 
-second running time ：0.785985sec
+second running time ：0.012874sec
 
 Score for class  =  0.998471
 Done!
@@ -383,4 +383,4 @@ Done!
 root@6c14f6aeab13:~/onnxruntime_cpp/demo/build#
 ```
 
-**Time:0.785985sec**
+**Time:0.012874sec**
