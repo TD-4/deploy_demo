@@ -14,12 +14,14 @@
 
 ## 2. 环境安装 & Demo
 
-| ID   | Architecture | Platform     | API        | FrameWork(Hardware Acceleration) | 代码Demo                                                     |
-| ---- | ------------ | ------------ | ---------- | -------------------------------- | ------------------------------------------------------------ |
-| 01   | x86服务器    | Ubuntu18.04+ | Python3.6+ | onnxruntime1.8.0                 |                                                              |
-| 02   | x86服务器    | Ubuntu18.04+ | C++ 11     | onnxruntime1.8.0                 |                                                              |
-| 03   | x86服务器    | Windows10    | Python3.6+ | onnxruntime1.8.0(cpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_python_onnxruntime1.8.1.md) |
-| 04   | x86服务器    | Windows10    | Python3.6+ | onnxruntime1.8.0(gpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_python_onnxruntime1.8.1_gpu.md) |
-| 05   | x86服务器    | Windows10    | C++ 11     | onnxruntime1.8.0(cpu)            |                                                              |
-| 06   | x86服务器    | Windows10    | C++ 11     | onnxruntime1.8.0(gpu)            |                                                              |
+| ID   | Architecture | Platform               | API        | FrameWork(Hardware Acceleration) | 代码Demo                                                     |
+| ---- | ------------ | ---------------------- | ---------- | -------------------------------- | ------------------------------------------------------------ |
+| 01   | x86服务器    | Ubuntu18.04+           | C++ 11     | onnxruntime1.8.0(cpu)            |                                                              |
+| 02   | x86服务器    | Ubuntu18.04+           | C++ 11     | onnxruntime1.8.0(gpu)            |                                                              |
+| 03   | x86服务器    | Windows10/Ubuntu18.04+ | Python3.6+ | onnxruntime1.8.0(cpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_python_onnxruntime1.8.1.md) |
+| 04   | x86服务器    | Windows10              | Python3.6+ | onnxruntime1.8.0(gpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_python_onnxruntime1.8.1_gpu.md) |
+| 05   | x86服务器    | Windows10              | C++ 11     | onnxruntime1.8.0(cpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_cpp_onnxruntime1.8.1.md) |
+| 06   | x86服务器    | Windows10              | C++ 11     | onnxruntime1.8.0(gpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_cpp_onnxruntime1.8.1_gpu.md) |
+|      |              |                        |            |                                  |                                                              |
+| 07   | x86服务器    | Ubuntu18.04+           | C++ 11     | tensorrt                         |                                                              |
 

@@ -56,10 +56,12 @@
 --x86_windows
 ----cpp
 ------onnxruntime_demo
---------onnxruntime_demo:代码
-----------main.cpp:demo代码
---------packages：onnxruntime库的安装路径
+--------main.cpp
+--------stdafx.h
+--------targetver.h
 ```
+
+上述代码需要使用`一、环境准备`的步骤大家环境，然后才能使用。
 
 ### 2. 代码执行
 
