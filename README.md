@@ -46,12 +46,12 @@
 
 **Ubuntu**
 
-(2060 GPU,  Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz,  36 core)
+(V100 GPU,  Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz,  36 core)
 
-| Ubuntu(V100 GPU) | C++    | Python |
-| ---------------- | ------ | :----- |
-| CPU              | 0.78s  | --     |
-| GPU              | 0.014s | --     |
+| Ubuntu | C++    | Python |
+| ------ | ------ | :----- |
+| CPU    | 0.78s  | --     |
+| GPU    | 0.014s | --     |
 
 ### TENSORRT
 
