@@ -50,3 +50,4 @@ Inference time with the ONNX model: 0.04799842834472656
 Inference result: 0.99800885
 ```
 
+**Time:0.04799842834472656**
