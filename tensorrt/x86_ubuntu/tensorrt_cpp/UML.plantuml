@@ -1,14 +1,142 @@
 @startuml
 scale 1
+class ClassificationTensorRT{
+    __功能__
+    API顶层接口
+    __
+
+    __构造&析构__
+
+    __属性__
+    +typedef struct classifier_ctx classifier_ctx
+    +int device_
+    __方法__
+    +void getDevices(int* num)
+    +void setDevice()
+    +std::shared_ptr<classifier_ctx> classifier_initialize()
+    +std::vector<std::vector<Prediction>> classifier_classify()
+    +std::vector<cv::Mat> classifier_segment()
+    +bool classifier_judge(std::shared_ptr<classifier_ctx>ctx, std::vector<cv::Mat>& pairImg, float threshold)
+}
+note right of ClassificationTensorRT::classifier_initialize()
+    std::shared_ptr<classifier_ctx> classifier_initialize(
+        std::string& onnx_file, std::string& engine_file,
+        std::string& label_file, bool attachSoftmax,
+        int maxBatch, int kContextsPerDevice,
+        int numGpus, int data_type)
+    1、初始化InferenceEngine
+        std::shared_ptr<InferenceEngine> engine(new InferenceEngine(onnx_model, engine_name, attachSoftmax, maxBatch, dt));
+    2、根据kContextsPerDevice，在每个GPU上创建多个ExecContext，并放到classifier_ctx的pool中
+end note
+note right of ClassificationTensorRT::classifier_classify()
+    std::vector<std::vector<Prediction>> classifier_classify(
+                std::shared_ptr<classifier_ctx>ctx,
+                std::vector<cv::Mat>& batchImg)
+    执行分类的函数，每一批图调用一次
+end note
+
+note right of ClassificationTensorRT::classifier_segment()
+    std::vector<cv::Mat> classifier_segment(
+                std::shared_ptr<classifier_ctx> ctx,
+                std::vector<cv::Mat>& batchImg,
+                bool probFormat = false)
+end note
+ClassificationTensorRT::classifier_ctx --> classifier_ctx
+
+
+class ScopedContext{
+    ..类功能..
+   
+    template <typename Context>
+    __
+    __构造 & 析构__
+    +explicit ScopedContext(ContextPool<Context>& pool)
+    +~ScopedContext()
+
+    __属性__
+    -ContextPool<Context>& pool_
+	-std::unique_ptr<Context> context_
+    __方法__
+    +Context* operator->() const
+
+    ContextPool<ExecContext> pool;
+}
+ScopedContext::pool --> ContextPool
+
+class classifier_ctx{
+    ..类功能..
+    结构体
+    ContextPool，API的执行上下文池
+    __
+    ContextPool<ExecContext> pool;
+}
+classifier_ctx "1" --> "many" ExecContext:包含
+classifier_ctx::ContextPool --> ContextPool
+
+class ContextPool{
+    template <typename Context>
+    using ContextPool = Queue<std::unique_ptr<Context>>
+}
+ContextPool --> Queue
+
+
+class Queue{
+    ..功能..
+    构造个队列类
+    __
+
+    __构造 & 析构__
+    +Queue() = default;
+	+Queue(Queue&& other)
+
+    __属性__
+    -mutable std::mutex mutex_
+	-std::queue<T> queue_
+	-std::condition_variable cond_
+
+    __方法__
+    +void Push(T value)
+    +T Pop()
+    +size_t Size()
+}
+
+
 class ExecContext{
     ..类功能..
     API的执行上下文
+    __
     {static} bool IsCompatible(int device)
     __属性__
-    int device_;
-    std::unique_ptr<GPUAllocator> allocator_;
-    std::unique_ptr<Classifier> classifier_;
+    -int device_
+    -std::unique_ptr<GPUAllocator> allocator_;
+    -std::unique_ptr<Classifier> classifier_;
+    #friend ScopedContext<ExecContext>
+
+    __构造 & 析构__
+    +ExecContext()
+    __方法__
+    -void Activate()
+    -void Deactivate()
+    +Classifier* TensorRTClassifier()
 }
+note left of ExecContext::ExecContext()
+    ExecContext(
+        std::shared_ptr<InferenceEngine> engine,
+        bool isOnnx,
+        const string& mean_file,
+        const string& label_file,
+        int device,
+        int batch_size = 16,
+        const string& input_blob = "data",
+        const string& output_blob = "score"): device_(device)
+        1、设定GPU
+        2、构造allocator_
+        3、构造classifier_
+end note
+ExecContext::allocator_ --> GPUAllocator :关联
+ExecContext::classifier_ --> Classifier :关联
+ExecContext::ScopedContext --> ScopedContext
+
 class Classifier{
     ..类功能..
     前向推断具体执行类 （Engine --> Runtime）
@@ -143,6 +271,7 @@ class GPUAllocator{
 	-cudaError_t grow(void** dev_ptr, size_t size)
 }
 
+
 class InferenceEngine{
     ..类功能..
     推理引擎类：NetWork->Builder->Engine
@@ -152,7 +281,6 @@ class InferenceEngine{
 
     __构造方法__
     +InferenceEngine()
-    +InferenceEngine(...)
 
     __方法__
     +ICudaEngine* deSerializeEngine()
@@ -162,10 +290,12 @@ note left of InferenceEngine::pEngine
     指向Engine的方法
 end note
 note left of InferenceEngine::InferenceEngine()
-    通过序列化构造类
-end note
-note left of InferenceEngine::InferenceEngine(...)
-    通过onnx文件构造类
+    1、通过序列化构造类
+    InferenceEngine()
+    2、通过onnx文件构造类
+    InferenceEngine::InferenceEngine(
+        const string& onnxModel, const string& engineName,
+        bool attachSoftmax, int maxBatch, nvinfer1::DataType dataType)
 end note
 note left of InferenceEngine::deSerializeEngine()
     反序列化已经生成的引擎文件
