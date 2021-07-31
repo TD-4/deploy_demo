@@ -6,6 +6,8 @@
 
 📚参考
 
+- **[官方安装教程](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html#installing)**
+
 ---
 
 ## 一、环境准备
