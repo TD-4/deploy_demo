@@ -482,11 +482,11 @@ void Classifier::Preprocess(const Mat& host_img, std::vector<GpuMat>* input_chan
 {
     int num_channels = input_dim_.c();
 #ifdef TRTLOG
-    std::cout << "Predict()---检测到输入图像通道数为:" << host_img.channels() << std::endl;
-	std::cout << "Predict()---检测到网络输入通道数为: " << num_channels << std::endl;
+    std::cout << "Classifier::Preprocess()---检测到输入图像(CPU)通道数为:" << host_img.channels() << std::endl;
+	std::cout << "Classifier::Preprocess()---检测到网络输入(GPU)通道数为: " << num_channels << std::endl;
 #endif // TRTLOG
 
-    GpuMat img(host_img, allocator_);
+    GpuMat img(host_img, allocator_); // 将主机上的图片内容，拷贝到GPU上
 
     /* Convert the input image to the input image format of the net. */
     GpuMat sample(allocator_);
@@ -502,10 +502,10 @@ void Classifier::Preprocess(const Mat& host_img, std::vector<GpuMat>* input_chan
     else
         sample = img;
 
-    //#ifdef TRTLOG
-    //	std::cout << "输入图片大小为 " << sample.size() << std::endl;
-    //	std::cout << "网络输入大小为 " << input_cv_size_ << std::endl;
-    //#endif // TRTLOG
+    #ifdef TRTLOG
+    	std::cout << "输入图片大小为 " << sample.size() << std::endl;
+    	std::cout << "网络输入大小为 " << input_cv_size_ << std::endl;
+    #endif // TRTLOG
 
     /* resize image */
     GpuMat sample_resized(allocator_);
@@ -543,15 +543,15 @@ std::vector<std::vector<float>> Classifier::Predict(const std::vector<Mat>& batc
     int batchSize = batchImg.size();
 
 #ifdef TRTLOG
-    std::cout << "Predicet()---处理输入，写入显存" << std::endl;
+    std::cout << "Classifier::Predict()---处理输入，写入显存" << std::endl;
 #endif // TRTLOG
     for (int b = 0; b < batchSize; ++b) {
         std::vector<GpuMat> input_channels;
-        WrapInputLayer(&input_channels, b);
-        Preprocess(batchImg[b], &input_channels);
+        WrapInputLayer(&input_channels, b); //为一张image分配GPU显存
+        Preprocess(batchImg[b], &input_channels);//将batchImg[b]的数据复制到input_channels（GPU）上，并做些预处理操作
     }
 #ifdef TRTLOG
-    std::cout << "Predict()---处理输入，写入显存完成" << std::endl;
+    std::cout << "Classifier::Predict()---处理输入，写入显存完成" << std::endl;
 #endif // TRTLOG
 
     void* buffers[2] = { input_layer_, output_layer_ };
@@ -560,7 +560,7 @@ std::vector<std::vector<float>> Classifier::Predict(const std::vector<Mat>& batc
     else
         context_->execute(batchSize, buffers);
 #ifdef TRTLOG
-    std::cout << "Predict()---前向执行完成" << std::endl;
+    std::cout << "Classifier::Predict()---前向执行完成" << std::endl;
 #endif // TRTLOG
 
     // Asynchronously copy data from host input buffers to device input buffers
@@ -578,7 +578,7 @@ std::vector<std::vector<float>> Classifier::Predict(const std::vector<Mat>& batc
     std::vector<std::vector<float>> batchOutputs;
     std::vector<float> output(output_size);
 #ifdef TRTLOG
-    std::cout << "Predict()---结果写回CPU" << std::endl;
+    std::cout << "Classifier::Predict()---结果写回CPU" << std::endl;
 #endif // TRTLOG
     cudaError_t st = cudaMemcpy(output.data(), output_layer_, output_size * sizeof(float), cudaMemcpyDeviceToHost);
     if (st != cudaSuccess)
@@ -588,7 +588,7 @@ std::vector<std::vector<float>> Classifier::Predict(const std::vector<Mat>& batc
 			output.begin() + (b + 1) * output_dim_.c() * output_dim_.h() * output_dim_.w()));
     }
 #ifdef TRTLOG
-    std::cout << "Predict()---结果组织成vector" << std::endl;
+    std::cout << "Classifier::Predict()---结果组织成vector" << std::endl;
 #endif // TRTLOG
     return batchOutputs;
 }
@@ -601,11 +601,11 @@ std::vector<std::vector<Prediction>> Classifier::Classify(const std::vector<Mat>
 {
     int batchSize = batchImg.size();
 #ifdef TRTLOG
-    std::cout << "Classify()---执行分类前向推断" << std::endl;
+    std::cout << "Classifier::Classify()---执行分类前向推断" << std::endl;
 #endif // TRTLOG
     std::vector<std::vector<float>> output = Predict(batchImg);
 #ifdef TRTLOG
-    std::cout << "Classify()---分类前向推断完成" << std::endl;
+    std::cout << "Classifier::Classify()---分类前向推断完成" << std::endl;
 #endif // TRTLOG
     std::vector<std::vector<Prediction>> batchPredictions;
     auto K = N > output[0].size() ? output[0].size() : N;
@@ -634,11 +634,11 @@ std::vector<cv::Mat> Classifier::Segment(const std::vector<Mat>& batchImg, bool 
     int w = input_cv_size_.height;
     int h = input_cv_size_.width;
 #ifdef TRTLOG
-    std::cout<<"Segment()---执行分割前向推断"<<std::endl;
+    std::cout<<"Classifier::Segment()---执行分割前向推断"<<std::endl;
 #endif // TRTLOG
     std::vector<std::vector<float>> output = Predict(batchImg);
 #ifdef TRTLOG
-    std::cout<<"Segment()---分割前向推断完成"<<std::endl;
+    std::cout<<"Classifier::Segment()---分割前向推断完成"<<std::endl;
 #endif // TRTLOG
     int c = output[0].size() / (w * h);
     if (probFormat) {

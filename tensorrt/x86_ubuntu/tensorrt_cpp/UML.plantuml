@@ -1,0 +1,175 @@
+@startuml
+scale 1
+class ExecContext{
+    ..类功能..
+    API的执行上下文
+    {static} bool IsCompatible(int device)
+    __属性__
+    int device_;
+    std::unique_ptr<GPUAllocator> allocator_;
+    std::unique_ptr<Classifier> classifier_;
+}
+class Classifier{
+    ..类功能..
+    前向推断具体执行类 （Engine --> Runtime）
+
+    __属性__
+    -GPUAllocator * allocator_
+    -std::shared_ptr<InferenceEngine> engine_
+    -SampleUniquePtr<IExecutionContext> context_
+    -bool isOnnx_
+    -GpuMat mean_
+    -std::vector<string> labels_
+    -DimsCHW input_dim_
+    -Size input_cv_size_
+    -float* input_layer_
+    -DimsCHW output_dim_
+    -float* output_layer_
+    -int batch_size_
+    -std::string input_blob_
+    -std::string output_blob_
+    __构造方法__
+    +Classifier()
+    +~Classifier()
+    __方法__
+    +std::vector<std::vector<Prediction>> Classify(const std::vector<Mat>& batchImg, int N = 5);
+    +std::vector<cv::Mat> Segment(const std::vector<Mat>& batchImg, bool probFormat = false);
+    +bool Judge(const std::vector<Mat>& pairImg, float T);
+    +std::vector<std::vector<Detection>> Detect(const std::vector<Mat>& batchImg);
+    -void SetModel();
+    -void SetMean(const string& mean_file);
+    -void SetLabels(const string& label_file);
+    -std::vector<std::vector<float>> Predict(const std::vector<Mat>& batchImg);
+    -void WrapInputLayer(std::vector<GpuMat>* input_channels, int idx);
+    -void Preprocess(const Mat& img,	std::vector<GpuMat>* input_channels);
+
+}
+note left of Classifier::allocator_
+    为Classifier分配GPU显存，
+    使用OpencvGPU中的方法
+end note
+Classifier::allocator_ --> GPUAllocator : 关联
+note right of Classifier::engine_
+    指向InferenceEngine的共享指针
+end note
+Classifier::engine_ --> InferenceEngine : 关联
+note right of Classifier::context_
+    独立指针，
+    指向nvinfer的IExecutioncontext类
+end note
+note left of Classifier::isOnnx_
+    是否是onnx文件
+end note
+note left of Classifier::mean_
+    输入图片的均值
+end note
+note left of Classifier::labels_
+    labels
+end note
+note left of Classifier::input_dim_
+    模型输入维度shape
+end note
+note left of Classifier::input_cv_size_
+    图片输入维度shape
+end note
+note left of Classifier::input_layer_
+    网络输入缓冲区，放到GPU上
+end note
+note left of Classifier::input_blob_
+    网络输入名称
+end note
+note right of Classifier::Classifier()
+    Classifier(std::shared_ptr<InferenceEngine> engine,
+    bool isOnnx, const string& mean_file,const string& label_file, 
+    GPUAllocator* allocator,const int& batch_size = 16,
+    const string& input_blob = "data", 
+    const string& output_blob = "score")
+    SetModel():获取engine，设置上下文；为input和output开辟显存
+    SetMean(...):均值设置
+    SetLabels(...):标签设置
+end note
+note left of Classifier::SetModel()
+    获取engine，设置执行上下文context_
+    为input和output开辟显存空间
+end note
+note right of Classifier::~Classifier()
+    释放input_layer_和output_layer_
+end note
+note right of Classifier::WrapInputLayer
+    为网络输入(一张图片)分配GPU显存
+end note
+note right of Classifier::Preprocess
+    1、检查图片和网络通道是否匹配
+    2、resize image
+    3、int2float
+    4、归一化:但是没看到除均值这一步
+end note 
+note right of Classifier::Classify
+    Predict
+        WrapInputLayer()
+        Preprocess()
+        context_->executeV2(buffers)
+        return batchOutputs
+    处理batchOutputs，获得<Prediction>格式
+end note
+note right of Classifier::Segment
+    Predict
+        WrapInputLayer()
+        Preprocess()
+        context_->executeV2(buffers)
+        return batchOutputs
+    处理batchOutputs，获得<Mat>格式
+end note
+
+
+class GPUAllocator{
+    ..类功能..
+    分配GPU显存，继承自GpuMat::Allocator
+    ..
+    {static} int align_up(unsigned int v, unsigned int alignment)
+    __构造 & 析构__
+    +GPUAllocator(size_t size)
+    +~GPUAllocator()
+
+    __属性__
+	-void* base_ptr_
+	-void* current_ptr_
+	-size_t total_size_
+	-size_t current_size_
+    __方法__
+    +void reset()
+    +bool allocate(GpuMat* mat, int rows, int cols, size_t elemSize)
+	+void free(GpuMat* mat)
+	-cudaError_t grow(void** dev_ptr, size_t size)
+}
+
+class InferenceEngine{
+    ..类功能..
+    推理引擎类：NetWork->Builder->Engine
+    
+    __属性__
+    - std::shared_ptr<ICudaEngine> pEngine 
+
+    __构造方法__
+    +InferenceEngine()
+    +InferenceEngine(...)
+
+    __方法__
+    +ICudaEngine* deSerializeEngine()
+    +ICudaEngine* Get()
+}
+note left of InferenceEngine::pEngine
+    指向Engine的方法
+end note
+note left of InferenceEngine::InferenceEngine()
+    通过序列化构造类
+end note
+note left of InferenceEngine::InferenceEngine(...)
+    通过onnx文件构造类
+end note
+note left of InferenceEngine::deSerializeEngine()
+    反序列化已经生成的引擎文件
+end note
+
+
+@enduml
