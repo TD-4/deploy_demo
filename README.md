@@ -24,7 +24,7 @@
 | 06   | x86          | Windows10              | C++ 11     | onnxruntime1.8.0(gpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_cpp_onnxruntime1.8.1_gpu.md) |
 | --   | ---          | --------------         | ------     | --------------                   | --                                                           |
 | 07   | x86          | Ubuntu18.04+           | C++ 11     | tensorrt                         | [![](imgs/github.png)](tensorrt/x86_ubuntu/x86_ubuntu_cpp_tensorrt7.2_gpu.md) |
-| 08   | x86          | Windows10              | C++ 11     | tensorrt                         | [![](imgs/github.png)]()                                     |
+| 08   | x86          | Windows10              | C++ 11     | tensorrt                         | [![](imgs/github.png)](tensorrt/x86_windows/x86_win10_cpp_tensorrt7.0.md)                                     |
 | 09   | x86          | Windows10              | Python3.6+ | tensorrt                         | [![](imgs/github.png)]()                                     |
 | 10   | x86          | Ubuntu18.04+           | Python3.6+ | tensorrt                         | [![](imgs/github.png)]()                                     |
 | --   | ---          | ------                 | ------     | --------------                   | --                                                           |
