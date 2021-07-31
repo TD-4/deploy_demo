@@ -22,12 +22,12 @@
 | 04   | x86          | Windows10              | Python3.6+ | onnxruntime1.8.0(gpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_python_onnxruntime1.8.1_gpu.md) |
 | 05   | x86          | Windows10              | C++ 11     | onnxruntime1.8.0(cpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_cpp_onnxruntime1.8.1.md) |
 | 06   | x86          | Windows10              | C++ 11     | onnxruntime1.8.0(gpu)            | [![](imgs/github.png)](onnxruntime/x86_windows/x86_win10_cpp_onnxruntime1.8.1_gpu.md) |
-| ==   | ===          | ========               | =====      | ============                     | ==                                                           |
-| 07   | x86          | Ubuntu18.04+           | C++ 11     | tensorrt                         |                                                              |
-| 08   | x86          | Windows10              | C++ 11     | tensorrt                         |                                                              |
-| 09   | x86          | Windows10              | Python3.6+ | tensorrt                         |                                                              |
-| 10   | x86          | Ubuntu18.04+           | Python3.6+ | tensorrt                         |                                                              |
-| ==   | ===          | ========               | =====      | ============                     | ==                                                           |
+| --   | ---          | --------------         | ------     | --------------                   | --                                                           |
+| 07   | x86          | Ubuntu18.04+           | C++ 11     | tensorrt                         | [![](imgs/github.png)](tensorrt/x86_ubuntu/x86_ubuntu_cpp_tensorrt7.2_gpu.md) |
+| 08   | x86          | Windows10              | C++ 11     | tensorrt                         | [![](imgs/github.png)]()                                     |
+| 09   | x86          | Windows10              | Python3.6+ | tensorrt                         | [![](imgs/github.png)]()                                     |
+| 10   | x86          | Ubuntu18.04+           | Python3.6+ | tensorrt                         | [![](imgs/github.png)]()                                     |
+| --   | ---          | ------                 | ------     | --------------                   | --                                                           |
 
 ## 3. 测试结果
 
