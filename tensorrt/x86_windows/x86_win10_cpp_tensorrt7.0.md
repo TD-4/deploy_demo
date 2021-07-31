@@ -13,7 +13,7 @@
 略，请百度
 
 ### 2.TensorRT windows编译
-略，请百度
+略，请百度或者参考[这里](https://github.com/FelixFu520/README/blob/main/envs/tools/tensorrt_win10.md)
 ### 3. VS环境配置
 在VS2017中添加OpencvGPU和TensorRT的库
 
